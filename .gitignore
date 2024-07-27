@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyo
+
+# Environments
+venv/
+.env
+
+# Django
+db.sqlite3
+*.log
+media/
+
+# Migrations
+**/migrations/
+**/migrations/*.py[cod]
+
+# Static files
+static/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# Pytest
+.pytest_cache/

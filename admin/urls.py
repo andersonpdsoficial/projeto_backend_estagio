@@ -29,5 +29,7 @@ router.register(r'consignataria', ConsignatariaViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
+    path('api/contrib/', include('contrib.urls')),
+    path('api/consignado/', include('consignado.urls')),
+    path('api/consignataria/', include('consignataria.urls')),
 ]

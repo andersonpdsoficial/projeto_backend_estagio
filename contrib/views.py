@@ -50,7 +50,7 @@ class ConsultaViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def consulta(self, request):
         """
-        Consulta a API do Athenas e salva os dados na tabela ConsultaMargemAthenas.
+        Consulta a API do Athenas e salva os dados na tabela ConsultaMargemAthenas da api atual
         """
         matricula = request.query_params.get('matricula')
         consignataria_id = request.query_params.get('consignataria_id')
@@ -65,7 +65,7 @@ class ConsultaViewSet(viewsets.ModelViewSet):
         except Consignataria.DoesNotExist:
             return Response({'error': 'Consignatária não encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Lógica para consultar a API do Athenas e salvar os dados
+        # Lógica para consultar a API do Athenas e salvar os dados no bd
         response = requests.get(f'API_URL?matricula={matricula}&consignataria_id={consignataria_id}')
         data = response.json()
         consulta_margem = ConsultaMargemAthenas.objects.create(

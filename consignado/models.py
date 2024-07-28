@@ -32,5 +32,5 @@ class Reserva(AuditoriaAbstractMixin):
     consulta = models.ForeignKey(ConsultaMargemAthena, on_delete=models.PROTECT, null=False, blank=False)
     prazo_inicial = models.DateTimeField()
     prazo_final = models.DateTimeField()
-    situacao = models.SmallIntegerField(choices=SITUACOES, blank=False, null=False)
-    contrato = models.CharField(max_length=255, unique=True, null=False, blank=False)
+    situacao = models.SmallIntegerField(choices=SITUACOES, blank=False, null=False, default= 'Em ANALISE')#situaç~]a da reserva
+    contrato = models.CharField(max_length=255, unique=True, null=False, blank=False) # numero de identificação do contrato associado à reserva

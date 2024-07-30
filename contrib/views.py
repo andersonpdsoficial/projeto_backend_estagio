@@ -65,18 +65,28 @@ class ConsultaViewSet(viewsets.ModelViewSet):
         except Consignataria.DoesNotExist:
             return Response({'error': 'Consignatária não encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Lógica para consultar a API do Athenas e salvar os dados no bd
-        response = requests.get(f'API_URL?matricula={matricula}&consignataria_id={consignataria_id}')
-        data = response.json()
-        consulta_margem = ConsultaMargemAthenas.objects.create(
-            margem_total=data['margem_total'],
-            margem_disponivel=data['margem_disponivel'],
-            servidor=servidor,
-            consignataria=consignataria,
-            consulta=Consulta.objects.get(matricula=servidor, id_Consignataria=consignataria)
-        )
-        serializer = ConsultaMargemAthenasSerializer(consulta_margem)
-        return Response(serializer.data)
+        # Cabeçalho do token para autenticação
+        headers = {
+            'Authorization': 'Bearer SEU_TOKEN_AQUI'
+        }
+
+        # Fazendo a requisição para a API externa
+        response = requests.get(f'https://athenas.defensoria.ro.def.br/api/consignado/?matricula={matricula}&consignataria_id={consignataria_id}', headers=headers)
+        
+        if response.status_code == 200:
+            dados = response.json()
+            # Salvando os dados na tabela ConsultaMargemAthenas
+            consulta_margem = ConsultaMargemAthenas.objects.create(
+                margem_total=dados['margem_total'],
+                margem_disponivel=dados['margem_disponivel'],
+                servidor=servidor,
+                consignataria=consignataria,
+                consulta=Consulta.objects.get(matricula=servidor, id_Consignataria=consignataria)
+            )
+            serializer = ConsultaMargemAthenasSerializer(consulta_margem)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Erro ao consultar a API externa'}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=False, methods=['post'])
     def reserva(self, request):

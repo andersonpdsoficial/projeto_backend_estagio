@@ -32,4 +32,5 @@ urlpatterns = [
     path('api/contrib/', include('contrib.urls')),
     path('api/consignado/', include('consignado.urls')),
     path('api/consignataria/', include('consignataria.urls')),
+    path('api/consultas-margem-athena/buscar_dados_externos/', ConsultaMargemAthenaViewSet.as_view({'get': 'buscar_dados_externos'}), name='buscar_dados_externos'),
 ]

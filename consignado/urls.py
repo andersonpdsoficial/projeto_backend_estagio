@@ -8,4 +8,5 @@ router.register(r'reservas', ReservaViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('consultas-margem-athena/buscar_dados_externos/', ConsultaMargemAthenaViewSet.as_view({'get': 'buscar_dados_externos'}), name='buscar_dados_externos'),
 ]

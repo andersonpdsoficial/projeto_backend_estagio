@@ -1,7 +1,23 @@
 from django.db import models
 from cuser.fields import CurrentUserField
 from django.utils import timezone
+import requests
+from django.conf import settings
 
+# Classe utilitária para interagir com a API externa
+class AthenasAPI:
+    BASE_URL = 'https://athenas.defensoria.ro.def.br/api/consignado/'
+
+    @staticmethod
+    def buscar_dados(matricula, consignataria_id):
+        headers = {
+            'Authorization': f'Bearer {settings.API_TOKEN}'
+        }
+        response = requests.get(f'{AthenasAPI.BASE_URL}?matricula={matricula}&consignataria_id={consignataria_id}', headers=headers)
+        if response.status_code == 200:
+            return response.json()
+        else:
+            return None
 
 # Classe para representar uma consignatária
 class Consignataria(models.Model):
@@ -18,19 +34,27 @@ class Servidor(models.Model):
 
     def __str__(self):
         return self.nome
-    
 
-# Essa Classe  representar uma consulta (associação entre servidor e consignatária)
+    def atualizar_dados(self, consignataria_id):
+        dados = AthenasAPI.buscar_dados(self.matricula, consignataria_id)
+        if dados:
+            ConsultaMargemAthenas.objects.create(
+                margem_total=dados['margem_total'],
+                margem_disponivel=dados['margem_disponivel'],
+                servidor=self,
+                consignataria=Consignataria.objects.get(id=consignataria_id),
+                consulta=Consulta.objects.get(matricula=self, id_Consignataria=consignataria_id)
+            )
+
+# Classe para representar uma consulta (associação entre servidor e consignatária)
 class Consulta(models.Model):
     matricula = models.ForeignKey(Servidor, on_delete=models.PROTECT) 
     id_Consignataria = models.ForeignKey(Consignataria, on_delete=models.PROTECT, related_name='consultas_consultataria') 
-
 
     class Meta:
         verbose_name = "Consulta"
         verbose_name_plural = "Consultas"
 
-# Retorna o ID da consulta como representação em forma de texto
     def __str__(self):
         return str(self.id) 
 
